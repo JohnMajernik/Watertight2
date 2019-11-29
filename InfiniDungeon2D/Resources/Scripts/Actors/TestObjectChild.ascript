@@ -1,0 +1,10 @@
+﻿{
+  "$ParentScript": "ascript:Scripts/Actors/TestObject.ascript",
+  "$Components": [
+    {
+      "$NativeClass": "Watertight.SFML.Components.SpriteComponent",
+      "Texture": "sprite:Textures/pikaoh.png"
+    }
+  ],
+  "TestString": "This is a child script!"
+}
