@@ -31,6 +31,8 @@ namespace Watertight.SFML
         {
             Window = new RenderWindow(new VideoMode((uint)ScreenSize.X, (uint)ScreenSize.Y), Watertight.Engine.Instance.Name);
             Window.Closed += (s, e) => Watertight.Engine.Instance.Shutdown();
+
+           
         }
     }
 }
