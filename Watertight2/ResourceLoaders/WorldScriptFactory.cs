@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Watertight.Filesystem;
 using Watertight.Scripts;
 
 namespace Watertight.ResourceLoaders
 {
-    class ActorScriptFactory : ObjectScriptFactory
+    class WorldScriptFactory : ObjectScriptFactory
     {
+
         protected override SubclassOf<ObjectScript> ScriptType
         {
             get;
             set;
-        } = typeof(ActorScript);
+        } = typeof(WorldScript);
 
         public override string[] ResourceSchemes
         {
@@ -21,13 +20,12 @@ namespace Watertight.ResourceLoaders
             {
                 return new string[]
                 {
-                    "ascript",
-                    "actor"
+                    "wscript",
+                    "world"
                 };
             }
         }
 
-        public override IEnumerable<string> FileExtensions => new string[] { ".ascript", ".actor" };
-                
+        public override IEnumerable<string> FileExtensions => new string[] { ".wscript", ".world" };
     }
 }

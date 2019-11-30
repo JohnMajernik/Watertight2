@@ -12,12 +12,10 @@ namespace Watertight.Scripts
     
     public class ActorScript : ObjectScript
     {
-        const string ComponentEntryName = "$" + nameof(Components);
+        const string ComponentEntryName = "$Components";
 
         static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-        List<ObjectScript> Components = new List<ObjectScript>();
-
+      
         public override void ApplyToObject(object obj)
         {
             if(!(obj is Actor))
@@ -25,60 +23,47 @@ namespace Watertight.Scripts
                 throw new ArgumentException("obj must be an actor", nameof(obj));               
             }
 
+
+            base.ApplyToObject(obj);
+        }
+
+        protected override void Internal_ApplyToObject(object obj)
+        {           
+            base.Internal_ApplyToObject(obj);
+
             Actor actor = obj as Actor;
 
-            
-            if(JObject.ContainsKey(ComponentEntryName) && JObject[ComponentEntryName] is JArray)
+            if (JObject.ContainsKey(ComponentEntryName) && JObject[ComponentEntryName] is JArray)
             {
                 JArray ComponetArray = JObject[ComponentEntryName] as JArray;
-                foreach(JObject jo in ComponetArray)
+                foreach (JObject jo in ComponetArray)
                 {
                     ObjectScript compscript = new ObjectScript()
                     {
                         JObject = jo
                     };
 
-                    Components.Add(compscript);
+                    Internal_AddComponent(actor, compscript);                  
 
                 }
             }
-
-            base.ApplyToObject(obj);
-        }
-
-        protected override void Internal_ApplyToObject(object obj)
-        {
-            base.Internal_ApplyToObject(obj);
         }
 
 
-
-        public void ApplyComponentsToActor(Actor actor)
+        protected void Internal_AddComponent(Actor actor, ObjectScript compScript)
         {
-            foreach(ObjectScript os in Components)
-            {               
-                SubclassOf<ActorComponent> ComponentSubclass = os.NativeClass.SubclassType;                
-
-                ActorComponent AC = actor.GetComponentByClass(ComponentSubclass);
-                bool RegisterComponent = false;                               
-                if(AC == null)
-                {
-                    AC = os.CreateInstance<ActorComponent>();
-                    RegisterComponent = true;
-                }
-                else
-                {
-                    //CreateInstance will apply the script.  If we didn't apply the inlined CompScript, then we need to apply it
-                    os.ApplyToObject(AC);
-                }
-
-                
-                if(RegisterComponent)
-                {
-                    AC.Owner = actor;
-                    AC.Register();
-                }
+            //Does the component already exist on the actor?  If it does, just apply this script. 
+            string CompName = compScript.FindObjectName();
+            if(CompName != null && actor.HasComponent(CompName))                
+            {
+                compScript.ApplyToObject(actor.GetComponentByName(CompName));
+                return;                    
             }
-        }
+
+            //Otherwise we create the Component
+            ActorComponent AC = compScript.CreateInstance<ActorComponent>();
+            AC.Owner = actor;
+            AC.Register();
+        }       
     }
 }

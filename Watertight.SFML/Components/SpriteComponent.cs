@@ -36,7 +36,7 @@ namespace Watertight.SFML.Components
 
             
 
-            Transform tf = new Transform();
+            Transform tf = Transform.Identity;
             Vector2f Translation = new Vector2f(100, 100);
             
             tf.Translate(Translation);

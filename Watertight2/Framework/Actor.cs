@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Watertight.Framework
 {
-    public class Actor : IHasResources, IHasScript, ITransformable
+    public partial class Actor : IHasResources, IHasScript, ITransformable
     {
         internal protected TickFunction PrimaryActorTick = new TickFunction()
         {
@@ -44,30 +44,13 @@ namespace Watertight.Framework
             set;
         } = Vector3.One;
 
-        List<ActorComponent> AllComponents
-        {
-            get;
-        } = new List<ActorComponent>();
-
+       
         public Actor()
         {
             PrimaryActorTick.TickFunc = Tick;
         }
 
-        public ActorComponent GetComponentByClass(SubclassOf<ActorComponent> Component)
-        {
-            return AllComponents.FirstOrDefault(x => x.GetType().IsAssignableFrom(Component));
-        }
-
-        internal void RegisterComponent_Internal(ActorComponent Component)
-        {
-            AllComponents.Add(Component);
-        }
-
-        public virtual void PostInitializeComponents()
-        {
-
-        }
+        
 
         public virtual void BeginPlay()
         {
@@ -104,7 +87,7 @@ namespace Watertight.Framework
 
         public void PostScriptApplied()
         {
-            (Script as ActorScript)?.ApplyComponentsToActor(this);            
+                  
         }
 
         public Vector3 GetLocation_WorldSpace()

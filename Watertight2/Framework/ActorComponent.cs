@@ -7,7 +7,7 @@ using Watertight.Tickable;
 
 namespace Watertight.Framework
 {
-    public class ActorComponent : IHasScript
+    public class ActorComponent : IHasScript, INamed
     {
         public Actor Owner
         {
@@ -24,6 +24,11 @@ namespace Watertight.Framework
         {
             get;
             set;
+        }
+        public string Name 
+        { 
+            get; 
+            set; 
         }
 
         internal protected TickFunction PrimaryTick = new TickFunction()

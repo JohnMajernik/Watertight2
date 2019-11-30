@@ -23,12 +23,13 @@ namespace Watertight.ResourceLoaders
             {
                 return new string[]
                 {
-                    "oscript"
+                    "oscript",
+                    "object"
                 };
             }
         }
 
-        public override IEnumerable<string> FileExtensions => new string[] { ".oscript" };
+        public override IEnumerable<string> FileExtensions => new string[] { ".oscript", ".object" };
 
         public override object GetResource(Stream stream)
         {

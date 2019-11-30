@@ -24,6 +24,7 @@ namespace InfiniDungeon2D.TestWorld
         public override void BeginPlay()
         {
             Logger.Info("I exist! {0}", TestString);
+
             base.BeginPlay();
         }
 

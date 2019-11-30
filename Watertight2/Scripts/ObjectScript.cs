@@ -4,6 +4,7 @@ using NLog.Filters;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Watertight.Filesystem;
 using Watertight.Interfaces;
@@ -11,17 +12,17 @@ using Watertight.Util;
 
 namespace Watertight.Scripts
 {
-    public class NoNativeClassException : Exception
+    public class MissingRequiredScriptFieldException : Exception
     {
-        public NoNativeClassException()
+        public MissingRequiredScriptFieldException()
         {
         }
 
-        public NoNativeClassException(string message) : base(message)
+        public MissingRequiredScriptFieldException(string message) : base(message)
         {
         }
 
-        public NoNativeClassException(string message, Exception innerException) : base(message, innerException)
+        public MissingRequiredScriptFieldException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }
@@ -30,6 +31,7 @@ namespace Watertight.Scripts
     {
         const string NativeClassName = "$" + nameof(NativeClass);
         const string ParentScriptName = "$" + nameof(ParentScript);
+        const string ObjectNameName = "$" + nameof(ObjectName);
 
 
         public JObject JObject
@@ -38,18 +40,19 @@ namespace Watertight.Scripts
             protected internal set;
         }
 
-        public virtual SubclassOf<object> NativeClass
+        public virtual Type NativeClass
         {
             get
             {
                 if (_NativeClass == null)
                 {
-                    string ClassName = JObject.Value<string>(NativeClassName) ?? "";
-                    _NativeClass = Utils.FindTypeFromString(ClassName);
+                    string ClassName = JObject.Value<string>(NativeClassName);
+                    _NativeClass = Utils.FindTypeFromString(ClassName);                    
                 }
                 return _NativeClass;
             }
         }
+        private Type _NativeClass;
 
         public virtual ObjectScript ParentScript
         {
@@ -63,8 +66,20 @@ namespace Watertight.Scripts
                 return _ParentScript?.Get<ObjectScript>();
             }
         }
-
         private ResourcePtr _ParentScript;
+
+        public virtual string ObjectName
+        {
+            get
+            {
+                if(_ObjectName == null)
+                {
+                    _ObjectName = JObject.Value<string>(ObjectNameName);
+                }
+                return _ObjectName;
+            }
+        }
+        private string _ObjectName;
 
         public ResourcePtr ResourcePtr
         {
@@ -72,7 +87,7 @@ namespace Watertight.Scripts
             set;
         }
 
-        private Type _NativeClass;
+        
 
         public  bool HasParentScript
         {
@@ -99,8 +114,7 @@ namespace Watertight.Scripts
             }
 
             Internal_ApplyToObject(obj);
-           
-
+                        
             if(obj is IHasScript)
             {
                 (obj as IHasScript).Script = this;
@@ -114,7 +128,7 @@ namespace Watertight.Scripts
             {
                 ParentScript?.Internal_ApplyToObject(obj);
             }
-
+            
             Type t = obj.GetType();
 
             foreach (var Property in t.GetProperties())
@@ -125,9 +139,42 @@ namespace Watertight.Scripts
                     Property.SetValue(obj, val);
                 }
             }
+
+            if(obj is INamed)
+            {
+                (obj as INamed).Name = ObjectName ?? (obj as INamed).Name;
+            }
         }
 
+        public Type FindNativeClass()
+        {       
+            ObjectScript SearchScript = this;
+            Type FoundNativeClass = NativeClass;
+            while (FoundNativeClass == null)
+            {
+                SearchScript = SearchScript.ParentScript ?? throw new MissingRequiredScriptFieldException(string.Format("{0} Has no {1} in any search path", ResourcePtr.ToString(), NativeClassName));
+                FoundNativeClass = SearchScript.NativeClass;
+            }
+
+            return FoundNativeClass;
+        }
         
+        public string FindObjectName()
+        {          
+            ObjectScript SearchScript = this;
+            string FoundName = ObjectName;
+            while (FoundName == null)
+            {
+                SearchScript = SearchScript.ParentScript;
+                if(SearchScript == null)
+                {
+                    return null;
+                }
+                FoundName = SearchScript.ObjectName;
+            }
+
+            return FoundName;
+        }
 
         public virtual object CreateInstance()
         {
@@ -138,13 +185,7 @@ namespace Watertight.Scripts
 
             //Find the parent native class
 
-            ObjectScript SearchScript = this;
-            Type FoundNativeClass = NativeClass;
-            while(FoundNativeClass == null)
-            {
-                SearchScript = SearchScript.ParentScript ?? throw new NoNativeClassException(String.Format("{0} Has no native class in any search path", ResourcePtr.ToString()));               
-                FoundNativeClass = SearchScript.NativeClass;
-            }
+            Type FoundNativeClass = FindNativeClass();          
 
             object o = Activator.CreateInstance(FoundNativeClass);
             ApplyToObject(o);
