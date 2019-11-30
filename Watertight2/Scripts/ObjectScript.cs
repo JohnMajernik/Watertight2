@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog.Filters;
 using System;
@@ -8,6 +9,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Watertight.Filesystem;
 using Watertight.Interfaces;
+using Watertight.Scripts.Parsers;
 using Watertight.Util;
 
 namespace Watertight.Scripts
@@ -29,9 +31,16 @@ namespace Watertight.Scripts
 
     public class ObjectScript : IIsResource
     {
-        const string NativeClassName = "$" + nameof(NativeClass);
-        const string ParentScriptName = "$" + nameof(ParentScript);
-        const string ObjectNameName = "$" + nameof(ObjectName);
+        private static JsonSerializer Serializer = new JsonSerializer();
+        static ObjectScript()
+        {
+            Serializer.Converters.Add(new VectorParser());
+        }
+
+
+        const string NativeClassName = "$" + nameof(NativeClass);       //$NativeClass
+        const string ParentScriptName = "$" + nameof(ParentScript);     //$ParentScript
+        const string ObjectNameName = "$" + nameof(ObjectName);         //$ObjectName
 
 
         public JObject JObject
@@ -122,6 +131,8 @@ namespace Watertight.Scripts
             }
         }
 
+        
+
         protected virtual void Internal_ApplyToObject(object obj)
         {
             if(ParentScript != null)
@@ -134,8 +145,8 @@ namespace Watertight.Scripts
             foreach (var Property in t.GetProperties())
             {
                 if (JObject.ContainsKey(Property.Name))
-                {
-                    object val = JObject.SelectToken(Property.Name).ToObject(Property.PropertyType);
+                {                 
+                    object val = JObject.SelectToken(Property.Name).ToObject(Property.PropertyType, Serializer);
                     Property.SetValue(obj, val);
                 }
             }
@@ -152,7 +163,11 @@ namespace Watertight.Scripts
             Type FoundNativeClass = NativeClass;
             while (FoundNativeClass == null)
             {
-                SearchScript = SearchScript.ParentScript ?? throw new MissingRequiredScriptFieldException(string.Format("{0} Has no {1} in any search path", ResourcePtr.ToString(), NativeClassName));
+                SearchScript = SearchScript.ParentScript;
+                if (SearchScript == null)
+                {
+                    return null;
+                }
                 FoundNativeClass = SearchScript.NativeClass;
             }
 
@@ -176,7 +191,7 @@ namespace Watertight.Scripts
             return FoundName;
         }
 
-        public virtual object CreateInstance()
+        public virtual object CreateInstance(Type NativeClass = null)
         {
             //If we have a parent script and a native class, instantiate the native class and apply all parent scripts.  
             //If we have a Parent Script and No Native Class, walk up the chain until we find a Native Class (if no class, throw exception)
@@ -185,7 +200,13 @@ namespace Watertight.Scripts
 
             //Find the parent native class
 
-            Type FoundNativeClass = FindNativeClass();          
+            Type FoundNativeClass = FindNativeClass() ?? NativeClass;
+
+            if(FoundNativeClass == null)
+            {
+                throw new MissingRequiredScriptFieldException(string.Format("{0} Has no {1} in any search path", ResourcePtr.ToString(), NativeClassName));
+            }
+                
 
             object o = Activator.CreateInstance(FoundNativeClass);
             ApplyToObject(o);
@@ -195,7 +216,7 @@ namespace Watertight.Scripts
 
         public virtual T CreateInstance<T>() where T : class
         {
-            return CreateInstance() as T;
+            return CreateInstance(typeof(T)) as T;
         }
     }
 }

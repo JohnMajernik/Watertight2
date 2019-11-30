@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Watertight.Filesystem;
 using Watertight.Framework;
@@ -19,20 +20,23 @@ namespace Watertight
             set;
         }
 
-        //TODO: Replace this with ActorTempates
-        public virtual IEnumerable<SubclassOf<Actor>> SpawnActors
-        {
-            get;
-            set;
-        }
-
         public bool HasBegunPlay
         {
             get;
             set;
         }
 
-        List<Actor> AllActors = new List<Actor>();
+        public IEnumerable<Actor> AllActors
+        {
+            get
+            {
+                return _AllActors;
+            }
+
+        } 
+            
+        private List<Actor> _AllActors = new List<Actor>();
+
 
         public World()
         {
@@ -71,8 +75,15 @@ namespace Watertight
             {
                 throw new ArgumentNullException(nameof(ActorClass), "Both Actor Class and ActorScript cannot be null.  Provide one.");
             }
-                       
-            AllActors.Add(actor);
+
+            if (actor.Name == null)
+            {
+                int CompCount = AllActors.Count(x => x.GetType().Name == actor.GetType().Name);
+                actor.Name = string.Format("{0}_{1}", actor.GetType().Name, CompCount);
+            }
+
+            _AllActors.Add(actor);
+            
 
             List<ResourcePtr> ResourceCollector = new List<ResourcePtr>();
             actor.CollectResources(ResourceCollector);
@@ -104,7 +115,7 @@ namespace Watertight
         internal void DestroyActor(Actor actor)
         {
             Engine.Instance.RemoveTickfunc(actor.PrimaryActorTick);
-            AllActors.Remove(actor);
+            _AllActors.Remove(actor);
             actor.OnDestroy();                        
         }
 
@@ -113,11 +124,7 @@ namespace Watertight
             FileSystem.BulkLoadAssets(PreloadResources, () => { BeginPlay(); }, (ptr, s, t) => {
                 Logger.Info("World Loading: {0} of {1}", s, t);
             });
-
-            foreach(SubclassOf<Actor> actorclass in SpawnActors)
-            {
-                CreateActor<Actor>(actorclass);
-            }
+          
         }
 
         internal virtual void BeginPlay()

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Watertight.Filesystem;
 using Watertight.Tickable;
+using Watertight.Scripts;
 
 namespace Watertight
 {
@@ -179,7 +180,7 @@ namespace Watertight
         }
 
         
-        public void LoadWorld(World WorldToLoad)
+        public World LoadWorld(World WorldToLoad)
         {
             if(ActiveWorld != null)
             {
@@ -189,7 +190,14 @@ namespace Watertight
 
             ActiveWorld = WorldToLoad;           
             ActiveWorld.BeginLoadingWorld();
-        }              
+
+            return ActiveWorld;
+        }  
+        
+        public World LoadWorld(WorldScript WorldScript)
+        {
+            return LoadWorld(WorldScript.CreateInstance<World>());
+        }
 
         public virtual void Shutdown()
         {

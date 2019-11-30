@@ -42,12 +42,14 @@ namespace InfiniDungeon2D
                     new ResourcePtr("font:Fonts/Work_Sans/WorkSans-Regular.ttf"),
                     TestActor,
                     SecondActor,
+                    World,
                 };
             }
         }
 
         ResourcePtr TestActor = new ResourcePtr("ascript:Scripts/Actors/TestObject.ascript");
         ResourcePtr SecondActor = new ResourcePtr("ascript:Scripts/Actors/TestObjectChild.ascript");
+        ResourcePtr World = new ResourcePtr("world:Scripts/Worlds/MainWorld.wscript");
         
         Text Text;
 
@@ -60,14 +62,9 @@ namespace InfiniDungeon2D
             Text = new Text("Hello World", Font.Get<Font>());
             Text.CharacterSize = 24;
             Text.FillColor = Color.Red;
+                       
 
-            World newWorld = new World();
-            newWorld.SpawnActors = new SubclassOf<Actor>[]
-            {
-             //   typeof(TestActor),
-            };
-
-            LoadWorld(newWorld);
+            World newWorld = LoadWorld(World.Get<WorldScript>());
 
             var actor = newWorld.CreateActor<Actor>(TestActor.Get<ActorScript>());
             actor.Location = new Vector3(100, 100, 0);

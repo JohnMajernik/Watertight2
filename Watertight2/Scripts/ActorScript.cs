@@ -12,7 +12,7 @@ namespace Watertight.Scripts
     
     public class ActorScript : ObjectScript
     {
-        const string ComponentEntryName = "$Components";
+        const string ComponentEntryName = "$Components";        //$Components
 
         static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
       

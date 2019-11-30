@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Watertight.Framework
 {
-    public partial class Actor : IHasResources, IHasScript, ITransformable
+    public partial class Actor : IHasResources, IHasScript, ITransformable, INamed
     {
         internal protected TickFunction PrimaryActorTick = new TickFunction()
         {
@@ -23,6 +23,12 @@ namespace Watertight.Framework
             get;
             internal set;
         }
+        public string Name
+        {
+            get;
+            set;
+        }
+
         public ObjectScript Script
         {
             get;
