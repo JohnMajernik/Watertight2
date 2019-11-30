@@ -33,18 +33,13 @@ namespace Watertight.SFML.Components
             System.Numerics.Vector3 Location = GetLocation_WorldSpace();
             System.Numerics.Quaternion Rotation = GetRotation_WorldSpace(); //TODO: Get the rotation out of this quat
             System.Numerics.Vector3 Scale = GetScale_WorldSpace();
-
-            
+                       
 
             Transform tf = Transform.Identity;
             Vector2f Translation = new Vector2f(100, 100);
             
             tf.Translate(Translation);
             tf.Scale(Scale.X, Scale.Y);
-
-
-
-
 
             RenderStates RS = RenderStates.Default;
             RS.Transform = tf;

@@ -37,9 +37,15 @@ namespace Watertight.Framework
             CanTick = true,
         };
 
-        public ActorComponent()
+        internal ActorComponent()
         {
             PrimaryTick.TickFunc = OnTick;
+        }
+
+        public ActorComponent(Actor Owner)
+            : this()
+        {
+            this.Owner = Owner;
         }
 
         public virtual void PostScriptApplied()

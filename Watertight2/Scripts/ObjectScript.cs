@@ -209,6 +209,10 @@ namespace Watertight.Scripts
                 
 
             object o = Activator.CreateInstance(FoundNativeClass);
+            if(o is IPostConstruct)
+            {
+                (o as IPostConstruct).PostConstruct();
+            }
             ApplyToObject(o);
 
             return o;

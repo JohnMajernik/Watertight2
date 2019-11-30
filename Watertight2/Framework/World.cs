@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using Watertight.Filesystem;
 using Watertight.Framework;
+using Watertight.Interfaces;
 using Watertight.Scripts;
 
 namespace Watertight
 {
-    public class World
+    public class World : IHasScript
     {
         static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -33,8 +34,14 @@ namespace Watertight
                 return _AllActors;
             }
 
-        } 
-            
+        }
+
+        public ObjectScript Script 
+        { 
+            get;
+            set;
+        }
+
         private List<Actor> _AllActors = new List<Actor>();
 
 
@@ -57,14 +64,15 @@ namespace Watertight
             Actor actor = null;
             if(ActorClass != null)
             {
-                actor = Activator.CreateInstance(ActorClass) as Actor;                
+                actor = Activator.CreateInstance(ActorClass) as Actor;
+                actor.PostConstruct();
                 if(actorScript != null)
                 {
                     actorScript.ApplyToObject(actor);
                 }
                 else
                 {
-                    actor.PostScriptApplied();
+                    actor.PostScriptApplied();                    
                 }
             }
             else if(actorScript != null)
@@ -144,6 +152,11 @@ namespace Watertight
             {
                 actor.Destroy();
             }
+        }
+
+        public virtual void PostScriptApplied()
+        {
+            
         }
     }
 }

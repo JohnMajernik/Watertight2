@@ -29,11 +29,16 @@ namespace Watertight.Framework
     public partial class Actor
     {
 
-        List<ActorComponent> AllComponents
+        public IEnumerable<ActorComponent> AllComponents
         {
-            get;
-        } = new List<ActorComponent>();
+            get
+            {
+                return _AllComponents;
+            }
+        } 
+        List<ActorComponent> _AllComponents = new List<ActorComponent>();
 
+       
 
         public bool HasComponent(SubclassOf<ActorComponent> ComponentClass)
         {
@@ -54,7 +59,7 @@ namespace Watertight.Framework
         {
             return AllComponents.FirstOrDefault(x => x.Name == Name);
         }
-
+               
         internal void RegisterComponent_Internal(ActorComponent Component)
         {
             if(Component == null)
@@ -68,11 +73,18 @@ namespace Watertight.Framework
 
             if(Component.Name == null)
             {
-                int CompCount = AllComponents.Count(x => x.GetType().Name == Component.GetType().Name);
-                Component.Name = string.Format("{0}_{1}", Component.GetType().Name, CompCount);
+                string BaseName = Component.GetType().Name;
+                if(Component.Script == null)
+                {
+                    BaseName = "NATIVE_" + BaseName;
+                }                
+
+                int CompCount = AllComponents.Count(x => x.Name.Remove(x.Name.LastIndexOf("_")) == BaseName );
+                Component.Name = string.Format("{0}_{1}", BaseName, CompCount);
+                
             }
 
-            AllComponents.Add(Component);
+            _AllComponents.Add(Component);
         }
 
         public virtual void PostInitializeComponents()

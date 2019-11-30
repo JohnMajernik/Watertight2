@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Watertight.Framework
 {
-    public partial class Actor : IHasResources, IHasScript, ITransformable, INamed
+    public partial class Actor : IHasResources, IHasScript, ITransformable, INamed, IPostConstruct
     {
         internal protected TickFunction PrimaryActorTick = new TickFunction()
         {
@@ -51,7 +51,7 @@ namespace Watertight.Framework
         } = Vector3.One;
 
        
-        public Actor()
+        protected internal Actor()
         {
             PrimaryActorTick.TickFunc = Tick;
         }
@@ -124,6 +124,11 @@ namespace Watertight.Framework
         public Vector3 GetScale_Relative()
         {
             return Scale;
+        }
+
+        public  virtual void PostConstruct()
+        {
+           
         }
     }
 }

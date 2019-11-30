@@ -61,6 +61,9 @@
     <None Update="Resources\Fonts\Work_Sans\WorkSans-Thin.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Scripts\Actors\Player.ascript">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Scripts\Actors\TestObjectChild.ascript">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
