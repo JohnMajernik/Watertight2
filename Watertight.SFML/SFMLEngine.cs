@@ -5,7 +5,9 @@ using System;
 using System.Numerics;
 using System.Reflection;
 using Watertight.Filesystem;
+using Watertight.Input;
 using Watertight.SFML.Components;
+using Watertight.SFML.Input;
 using Watertight.Tickable;
 
 namespace Watertight.SFML
@@ -63,6 +65,16 @@ namespace Watertight.SFML
         }
         private SFMLCameraComponent _MainCamera;
 
+        private SFMLKeyboardInputSource KeyboardInput
+        {
+            get;
+        } = new SFMLKeyboardInputSource();
+
+        private SFMLMouseInputSource MouseInput
+        {
+            get;
+        } = new SFMLMouseInputSource();
+
         public override void OnInit()
         {
             FileSystem.ScanAssemblyForResourceFactories(Assembly.GetExecutingAssembly());
@@ -71,8 +83,16 @@ namespace Watertight.SFML
             Window.Closed += (s, e) => this.Shutdown();
 
             Window.Resized += Window_Resized;
-            Window.KeyPressed += Window_KeyPressed;
-            Window.KeyReleased += Window_KeyReleased;
+            Window.KeyPressed += KeyboardInput.Window_KeyPressed;
+            Window.KeyReleased += KeyboardInput.Window_KeyReleased;
+
+            Window.MouseButtonPressed += MouseInput.Window_KeyPressed;
+            Window.MouseButtonReleased += MouseInput.Window_KeyReleased;
+
+            Window.SetKeyRepeatEnabled(false);
+
+            InputProcessor.RegisterInputSource(KeyboardInput);
+            InputProcessor.RegisterInputSource(MouseInput);
 
             RenderEndFunc.TickFunc = RenderEnd;
             AddTickfunc(RenderEndFunc);

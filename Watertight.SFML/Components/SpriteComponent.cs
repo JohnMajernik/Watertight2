@@ -35,10 +35,8 @@ namespace Watertight.SFML.Components
             System.Numerics.Vector3 Scale = GetScale_WorldSpace();
                        
 
-            Transform tf = Transform.Identity;
-            Vector2f Translation = new Vector2f(100, 100);
-            
-            tf.Translate(Translation);
+            Transform tf = Transform.Identity;            
+            tf.Translate(Location.X, Location.Y);
             tf.Scale(Scale.X, Scale.Y);
 
             RenderStates RS = RenderStates.Default;
@@ -48,8 +46,8 @@ namespace Watertight.SFML.Components
             SFMLEngine engine = Engine.Instance as SFMLEngine;
             if (Texture.Loaded)
             {
-                Texture.Get<Sprite>().Position = new Vector2f(Location.X, Location.Y);
-                engine?.Window.Draw(Texture.Get<Sprite>());
+                //Texture.Get<Sprite>().Position = new Vector2f(Location.X, Location.Y);
+                engine?.Window.Draw(Texture.Get<Sprite>(), RS);
             }
 
             base.OnTick(DeltaTime);

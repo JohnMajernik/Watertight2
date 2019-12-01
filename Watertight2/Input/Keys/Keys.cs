@@ -839,6 +839,7 @@ namespace Watertight.Input
         OemMinus = 0xBD,
 
         Minus = OemMinus,
+        Hyphen = OemMinus,
 
         /// <summary>
         ///  The Oem Period key.
@@ -990,5 +991,22 @@ namespace Watertight.Input
         ///  The CLEAR key.
         /// </summary>
         OemClear = 0xFE,
+
+
+        /// <summary>
+        /// Mouse X Axis
+        /// </summary>
+        MouseX = 0x100,
+        /// <summary>
+        /// Mouse Y Axis
+        /// </summary>
+        MouseY = 0x101,
+        /// <summary>
+        /// Mouse Wheel
+        /// </summary>
+        MouseWheel = 0x102,
+
+        MouseWheelUp = 0x103,
+        MouseWheelDown = 0x104,
     }
 }

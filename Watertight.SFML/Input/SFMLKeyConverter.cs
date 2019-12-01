@@ -12,6 +12,7 @@ namespace Watertight.SFML.Input
     /// </summary>
     public static class SFMLKeyConverter
     {
+        #region Keyboard Conversion
         public static WTKey Convert(SFMLKey Key)
         {
 
@@ -55,7 +56,7 @@ namespace Watertight.SFML.Input
                 (int)SFMLKey.Period => WTKey.Period,
                 (int)SFMLKey.Quote => WTKey.Quote,
                 (int)SFMLKey.Slash => WTKey.Question,
-                (int)SFMLKey.Backslash => WTKey.Backslash,
+                (int)SFMLKey.Backslash => WTKey.Backslash,             
                 (int)SFMLKey.Tilde => WTKey.Tilde,
                 (int)SFMLKey.Equal => WTKey.Equal,
                 (int)SFMLKey.Hyphen => WTKey.Minus,
@@ -80,11 +81,10 @@ namespace Watertight.SFML.Input
                 (int)SFMLKey.Pause => WTKey.Pause,
                 _ => WTKey.None,
             };
-
             return TheRest;
         }
 
-        public static SFMLKey Convert(WTKey Key)
+        public static SFMLKey ConvertKeyboard(WTKey Key)
         {
             if ((int)Key >= (int)WTKey.A && (int)Key <= (int)WTKey.Z)
             {
@@ -149,9 +149,35 @@ namespace Watertight.SFML.Input
                 (int)WTKey.Pause => SFMLKey.Pause,
                 _ => SFMLKey.Unknown,
             };
-
-
             return TheRest;
         }
+        #endregion
+
+        public static WTKey Convert(Mouse.Button key)
+        {
+            return key switch
+            {
+                Mouse.Button.Left => WTKey.LeftMouse,
+                Mouse.Button.Right => WTKey.RightMouse,
+                Mouse.Button.Middle => WTKey.MiddleMouse,
+                Mouse.Button.XButton1 => WTKey.Mouse4,
+                Mouse.Button.XButton2 => WTKey.Mouse5,
+                _ => WTKey.None,
+            };
+        }
+
+        public static Mouse.Button ConvertMouse(WTKey Key)
+        {
+            return Key switch
+            {
+                WTKey.LeftMouse => Mouse.Button.Left,
+                WTKey.RightMouse => Mouse.Button.Right,
+                WTKey.MiddleMouse => Mouse.Button.Middle,
+                WTKey.Mouse4 => Mouse.Button.XButton1,
+                WTKey.Mouse5 => Mouse.Button.XButton2,
+                _ => Mouse.Button.ButtonCount,
+            };
+        }
+
     }
 }

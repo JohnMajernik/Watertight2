@@ -33,7 +33,7 @@ namespace Watertight.SFML.Components
             System.Numerics.Quaternion Rotation = GetRotation_WorldSpace(); //TODO: Get the rotation out of this quat
             System.Numerics.Vector3 Scale = GetScale_WorldSpace();
 
-            Camera = new View(new Vector2f(Location.X, Location.Y), new Vector2f(SFMLEngine.SFMLInstance.ScreenSize.X, SFMLEngine.SFMLInstance.ScreenSize.Y));
+            Camera = new View(new Vector2f(Location.X, -Location.Y), new Vector2f(SFMLEngine.SFMLInstance.ScreenSize.X, SFMLEngine.SFMLInstance.ScreenSize.Y));
             Camera.Zoom(Scale.X);
             base.OnTick(DeltaTime);
         }

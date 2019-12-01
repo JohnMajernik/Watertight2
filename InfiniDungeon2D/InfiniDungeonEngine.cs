@@ -8,6 +8,7 @@ using System.Text;
 using Watertight;
 using Watertight.Filesystem;
 using Watertight.Framework;
+using Watertight.Input;
 using Watertight.Scripts;
 using Watertight.SFML;
 using Watertight.Tickable;
@@ -56,6 +57,11 @@ namespace InfiniDungeon2D
         public override void OnInit()
         {
             base.OnInit();
+
+            InputProcessor.UpdateActionBinding("Left", Key.D, Key.Left);
+            InputProcessor.UpdateActionBinding("Right", Key.A, Key.Right);
+            InputProcessor.UpdateActionBinding("Up", Key.W, Key.Up);
+            InputProcessor.UpdateActionBinding("Down", Key.S, Key.Down);
 
             ResourcePtr Font = new ResourcePtr("font:Fonts/Work_Sans/WorkSans-Regular.ttf");
 

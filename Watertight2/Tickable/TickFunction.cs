@@ -7,6 +7,7 @@ namespace Watertight.Tickable
     public enum TickGroup
     {
         HighPriority,
+        InputPoll,
         World,
         Network,
         Last,
