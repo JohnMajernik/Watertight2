@@ -37,7 +37,7 @@ namespace Watertight.Framework
             CanTick = true,
         };
 
-        internal ActorComponent()
+        internal protected ActorComponent()
         {
             PrimaryTick.TickFunc = OnTick;
         }

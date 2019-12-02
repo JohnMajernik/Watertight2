@@ -5,13 +5,23 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using Watertight.Filesystem;
+using Watertight.Framework;
 using Watertight.Framework.Components;
 using Watertight.Interfaces;
 
 namespace Watertight.SFML.Components
 {
-    class SpriteComponent : SceneComponent, IHasResources
+    public class SpriteComponent : SceneComponent, IHasResources
     {
+        public SpriteComponent(Actor Owner) : base(Owner)
+        {
+        }
+
+        public SpriteComponent()
+            : base()
+        {
+        }
+
         public ResourcePtr Texture
         {
             get;

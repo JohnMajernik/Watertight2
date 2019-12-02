@@ -10,35 +10,45 @@ namespace InfiniDungeon2D.TestWorld
 {
     class Player : Actor
     {
+        Vector3 ControlInput
+        {
+            get;
+            set;
+        }
+
 
         public override void BeginPlay()
         {
-            InputProcessor.BindInput("Up", MoveUp, InputProcessor.InputEvent.Pressed);
-            InputProcessor.BindInput("Down", MoveDown, InputProcessor.InputEvent.Pressed);
-            InputProcessor.BindInput("Left", MoveLeft, InputProcessor.InputEvent.Pressed);
-            InputProcessor.BindInput("Right", MoveRight, InputProcessor.InputEvent.Pressed);
+            InputProcessor.BindInput("Up", ()=> { VerticalControl(1); }, InputProcessor.InputEvent.Pressed);
+            InputProcessor.BindInput("Up", () => { VerticalControl(-1); }, InputProcessor.InputEvent.Released);
+
+            InputProcessor.BindInput("Down", () => { VerticalControl(-1); }, InputProcessor.InputEvent.Pressed);
+            InputProcessor.BindInput("Down", () => { VerticalControl(1); }, InputProcessor.InputEvent.Released);
+
+            InputProcessor.BindInput("Left", () => { HorizontalControl(1); }, InputProcessor.InputEvent.Pressed);
+            InputProcessor.BindInput("Left", () => { HorizontalControl(-1); }, InputProcessor.InputEvent.Released);
+
+            InputProcessor.BindInput("Right", () => { HorizontalControl(-1); }, InputProcessor.InputEvent.Pressed);
+            InputProcessor.BindInput("Right", () => { HorizontalControl(1); }, InputProcessor.InputEvent.Released);
 
             base.BeginPlay();
         }
 
-        public void MoveUp()
+        public void VerticalControl(float Dir)
         {
-            Location += new Vector3(0, 10, 0);
+            ControlInput += new Vector3(0, Dir, 0);
         }
 
-        public void MoveDown()
+        public void HorizontalControl(float Dir)
         {
-            Location += new Vector3(0, -10, 0);
+            ControlInput += new Vector3(Dir, 0, 0);
         }
 
-        public void MoveLeft()
+        public override void Tick(float DeltaTime)
         {
-            Location += new Vector3(10, 0, 0);
+            Location += ControlInput * 1 * DeltaTime;
+            base.Tick(DeltaTime);
         }
 
-        public void MoveRight()
-        {
-            Location += new Vector3(-10, 0, 0);
-        }
     }
 }

@@ -102,43 +102,7 @@ namespace Watertight.SFML
 
             base.OnInit();
         }
-
-        private void Window_KeyReleased(object sender, KeyEventArgs e)
-        {
-            
-        }
-
-        private void Window_KeyPressed(object sender, KeyEventArgs e)
-        {
-            if(e.Code == Keyboard.Key.A)
-            {
-                if(MainCamera != null)
-                {
-                    MainCamera.Owner.Location += new Vector3(-10, 0, 0);
-                }
-            }
-            if (e.Code == Keyboard.Key.D)
-            {
-                if (MainCamera != null)
-                {
-                    MainCamera.Owner.Location += new Vector3(10, 0, 0);
-                }
-            }
-            if (e.Code == Keyboard.Key.S)
-            {
-                if (MainCamera != null)
-                {
-                    MainCamera.Owner.Location += new Vector3(0, 10, 0);
-                }
-            }
-            if (e.Code == Keyboard.Key.W)
-            {
-                if (MainCamera != null)
-                {
-                    MainCamera.Owner.Location += new Vector3(0, -10, 0);
-                }
-            }
-        }
+              
 
         private void Window_Resized(object sender, SizeEventArgs e)
         {

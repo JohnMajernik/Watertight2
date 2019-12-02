@@ -6,6 +6,9 @@
     },
     {
       "$ParentScript": "ascript:Scripts/Actors/Player.ascript"
+    },
+    {
+      "$NativeClass": "InfiniDungeon2D.TestWorld.TileWorld"
     }
   ]
 }

@@ -8,6 +8,17 @@ namespace Watertight.Framework.Components
 {
     public class SceneComponent : ActorComponent, ITransformable
     {
+        public SceneComponent(Actor Owner)
+            :base(Owner)
+        {
+            
+        }
+
+        public SceneComponent()
+            : base()
+        {
+        }
+
         public SceneComponent Parent
         {
             get;

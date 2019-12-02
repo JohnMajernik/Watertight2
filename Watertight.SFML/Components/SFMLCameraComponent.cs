@@ -3,6 +3,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Watertight.Framework;
 using Watertight.Framework.Components;
 
 namespace Watertight.SFML.Components
@@ -10,6 +11,15 @@ namespace Watertight.SFML.Components
     public class SFMLCameraComponent : SceneComponent
     {
         internal View Camera;
+
+        public SFMLCameraComponent(Actor Owner) : base(Owner)
+        {
+        }
+
+        public SFMLCameraComponent()
+            : base()
+        {
+        }
 
         public override void PostScriptApplied()
         {
