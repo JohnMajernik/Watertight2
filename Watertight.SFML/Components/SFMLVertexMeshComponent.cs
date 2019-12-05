@@ -45,6 +45,7 @@ namespace Watertight.SFML.Components
                 VertexArray[i] = new Vertex();
                 VertexArray[i].Position = new Vector2f(Verticies[i].X, Verticies[i].Y);
                 VertexArray[i].TexCoords = new Vector2f(UVs[i].X, UVs[i].Y);
+                VertexArray[i].Color = Color.White;
             }
 
         }
