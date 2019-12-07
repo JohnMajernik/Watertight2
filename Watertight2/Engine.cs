@@ -51,11 +51,11 @@ namespace Watertight
         {
             get
             {
-                return (1 / (MaxFrameTime * 1000));
+                return (1 / (GameThreadTickManager.MaxFrameTime * 1000));
             }
             set
             {
-                MaxFrameTime = 1 / (value / 1000);
+                GameThreadTickManager.MaxFrameTime = 1 / (value / 1000);
             }
 
         }
@@ -72,12 +72,11 @@ namespace Watertight
             get;
         }
 
-
-        private float MaxFrameTime;
-
-        private List<TickFunction> TickList = new List<TickFunction>();
-        private List<TickFunction> RemoveTickList = new List<TickFunction>();
-        private Stopwatch StopWatch = new Stopwatch();
+        TickManager GameThreadTickManager
+        {
+            get;
+            set;
+        } = new TickManager();
 
         static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -102,7 +101,7 @@ namespace Watertight
                 CanTick = true,
             };
 
-            TickList.Add(EngineTick);
+            GameThreadTickManager.AddTick(EngineTick);
 
             MaxFPS = 250;           
 
@@ -125,7 +124,7 @@ namespace Watertight
         public void Run()
         {
             Running = true;
-            StopWatch.Start();
+            GameThreadTickManager.Init();
             while (ExecuteTick())
             {
 
@@ -134,41 +133,7 @@ namespace Watertight
 
         private bool ExecuteTick()
         {
-            long FrameStart = StopWatch.ElapsedTicks;
-            TickList.Sort((x, y) => {
-                return (int)x.TickGroup - (int)y.TickGroup;
-                });
-            for(int i = 0; i < TickList.Count; i++)
-            {
-                TickFunction tf = TickList[i];
-                long TickStart = StopWatch.ElapsedTicks;
-                long DeltaTick = TickStart - tf.LastTickTime;
-                float DeltaTimeMs = (float)DeltaTick / (float)TimeSpan.TicksPerMillisecond;
-
-                if(tf.CanTick)
-                {
-                    tf.TickFunc?.Invoke(DeltaTimeMs);
-                }               
-
-                tf.LastTickTime = TickStart;
-            }
-
-            foreach (TickFunction tickfunc in RemoveTickList)
-            {
-                TickList.Remove(tickfunc);
-            }
-            RemoveTickList.Clear();
-
-            long FrameDelta = StopWatch.ElapsedTicks - FrameStart;
-            float BeforeSleepDeltaTime = (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
-
-            if(BeforeSleepDeltaTime < MaxFrameTime)
-            {
-                Thread.Sleep((int)(MaxFrameTime - BeforeSleepDeltaTime));
-            }
-
-            FrameDelta = StopWatch.ElapsedTicks - FrameStart;
-            float TotalFrameDeltaTime = (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
+            float TotalFrameDeltaTime = GameThreadTickManager.ExecuteSingleTick();
             FPS = (1 / TotalFrameDeltaTime) * 1000;
 
             return Running;
@@ -206,17 +171,12 @@ namespace Watertight
 
         protected internal void AddTickfunc(TickFunction TickFunc)
         {
-            if(!TickList.Contains(TickFunc))
-            {
-                TickList.Add(TickFunc);
-            }
+            GameThreadTickManager.AddTick(TickFunc);
         }
 
         protected internal void RemoveTickfunc(TickFunction TickFunc)
         {
-            TickFunc.CanTick = false;
-            RemoveTickList.Add(TickFunc);
-            
+            GameThreadTickManager.RemoveTick(TickFunc);
         }
 
         private static void ConfigureLogger()
