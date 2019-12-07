@@ -6,6 +6,7 @@ using System.Threading;
 using Watertight.Filesystem;
 using Watertight.Tickable;
 using Watertight.Scripts;
+using Watertight.Rendering;
 
 namespace Watertight
 {
@@ -51,11 +52,11 @@ namespace Watertight
         {
             get
             {
-                return (1 / (GameThreadTickManager.MaxFrameTime * 1000));
+                return (1 / (GameThreadTickManager.MinFrameTime * 1000));
             }
             set
             {
-                GameThreadTickManager.MaxFrameTime = 1 / (value / 1000);
+                GameThreadTickManager.MinFrameTime = 1 / (value / 1000);
             }
 
         }
@@ -78,6 +79,19 @@ namespace Watertight
             set;
         } = new TickManager();
 
+        private Thread RenderThread;
+        public Renderer Renderer
+        {
+            get;
+            private set;
+        }
+
+
+        public abstract SubclassOf<Renderer> RendererType
+        {
+            get;
+        }
+
         static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Engine()
@@ -94,6 +108,8 @@ namespace Watertight
             //Init the Filesystem
             System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(FileSystem).TypeHandle);
 
+            //TODO: Configure Engine from a config file
+
             TickFunction EngineTick = new TickFunction
             {
                 TickFunc = Tick,
@@ -103,6 +119,10 @@ namespace Watertight
 
             GameThreadTickManager.AddTick(EngineTick);
 
+            Renderer = (Renderer)Activator.CreateInstance(RendererType);
+            //TODO: Thread This.  For now, we just tick it
+            GameThreadTickManager.AddTick(Renderer.RenderTickFunction);
+
             MaxFPS = 250;           
 
             foreach (ResourcePtr resourcePtr in PreloadResources)
@@ -110,7 +130,7 @@ namespace Watertight
                Logger.Info("Preloading Asset: {0}", resourcePtr.ToString());
                resourcePtr.Load();
             }
-
+            
             OnInit();
 
             Logger.Info("Finished Loading Engine.  Ready to Begin");
@@ -123,6 +143,11 @@ namespace Watertight
 
         public void Run()
         {
+            //TODO: Render Thread this
+            Renderer.CreateRenderer();
+
+            Renderer.CreateWindow();           
+
             Running = true;
             GameThreadTickManager.Init();
             while (ExecuteTick())

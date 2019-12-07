@@ -57,7 +57,14 @@ namespace Watertight.Framework
         {
             Registered = true;
             Owner.RegisterComponent_Internal(this);
+           
+
             Engine.Instance.AddTickfunc(PrimaryTick);
+            if (this is IRenderable)
+            {
+                Engine.Instance.Renderer.AddRenderable(this as IRenderable);
+            }
+
             OnRegister();
         }
 
@@ -69,6 +76,14 @@ namespace Watertight.Framework
         public virtual void OnTick(float DeltaTime)
         {
 
+        }
+
+        public void OnDestroy()
+        {
+            if (this is IRenderable)
+            {
+                Engine.Instance.Renderer.RemoveRenderable(this as IRenderable);
+            }
         }
     }
 }

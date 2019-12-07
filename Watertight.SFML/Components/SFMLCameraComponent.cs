@@ -26,7 +26,7 @@ namespace Watertight.SFML.Components
             base.PostScriptApplied();
 
             Camera = new View();
-            if(SFMLEngine.SFMLInstance.MainCamera == null)
+            if(SFMLRenderer.Instance.MainCamera == null)
             {
                 MakeMainCamera();
             }
@@ -34,7 +34,7 @@ namespace Watertight.SFML.Components
 
         public void MakeMainCamera()
         {
-            SFMLEngine.SFMLInstance.MainCamera = this;
+            SFMLRenderer.Instance.MainCamera = this;
         }
 
         public override void OnTick(float DeltaTime)

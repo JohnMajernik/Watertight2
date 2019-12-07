@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Reflection;
 using Watertight.Filesystem;
 using Watertight.Input;
+using Watertight.Rendering;
 using Watertight.SFML.Components;
 using Watertight.SFML.Input;
 using Watertight.Tickable;
@@ -24,17 +25,7 @@ namespace Watertight.SFML
         }
         
 
-        TickFunction RenderEndFunc = new TickFunction
-        {
-            CanTick = true,
-            TickPriority = TickFunction.Last,
-        };
-
-        TickFunction RenderStartFunc = new TickFunction
-        {
-            CanTick = true,
-            TickPriority = TickFunction.HighPriority,
-        };
+        
 
         public Vector2i ScreenSize
         {
@@ -44,26 +35,23 @@ namespace Watertight.SFML
 
         public RenderWindow Window
         {
-            get;
-            set;
-        }
-
-        internal SFMLCameraComponent MainCamera
-        {
             get
             {
-                return _MainCamera;
-            }
-            set
-            {
-                _MainCamera = value;
-                if(_MainCamera != null && Window != null)
-                {
-                    Window.SetView(_MainCamera.Camera);
-                }
+                return SFMLRenderer.Window;
             }
         }
-        private SFMLCameraComponent _MainCamera;
+
+        protected internal SFMLRenderer SFMLRenderer
+        { 
+            get
+            {
+                return Renderer as SFMLRenderer;
+            }
+        }
+        
+
+        public override SubclassOf<Renderer> RendererType => typeof(SFMLRenderer);
+               
 
         private SFMLKeyboardInputSource KeyboardInput
         {
@@ -78,35 +66,33 @@ namespace Watertight.SFML
         public override void OnInit()
         {
             FileSystem.ScanAssemblyForResourceFactories(Assembly.GetExecutingAssembly());
-            
-            Window = new RenderWindow(new VideoMode((uint)ScreenSize.X, (uint)ScreenSize.Y), Name);
-            Window.Closed += (s, e) => this.Shutdown();
 
-            Window.Resized += Window_Resized;
-            Window.KeyPressed += KeyboardInput.Window_KeyPressed;
-            Window.KeyReleased += KeyboardInput.Window_KeyReleased;
+            base.OnInit();
 
-            Window.MouseButtonPressed += MouseInput.Window_KeyPressed;
-            Window.MouseButtonReleased += MouseInput.Window_KeyReleased;
+            Renderer.OnWindowCreated += () =>
+            {
+                Window.Resized += Window_Resized;
+                Window.KeyPressed += KeyboardInput.Window_KeyPressed;
+                Window.KeyReleased += KeyboardInput.Window_KeyReleased;
 
-            Window.SetKeyRepeatEnabled(false);
+                Window.MouseButtonPressed += MouseInput.Window_KeyPressed;
+                Window.MouseButtonReleased += MouseInput.Window_KeyReleased;
+
+                Window.SetKeyRepeatEnabled(false);                
+            };
 
             InputProcessor.RegisterInputSource(KeyboardInput);
             InputProcessor.RegisterInputSource(MouseInput);
 
-            RenderEndFunc.TickFunc = RenderEnd;
-            AddTickfunc(RenderEndFunc);
 
-            RenderStartFunc.TickFunc = RenderStart;
-            AddTickfunc(RenderStartFunc);
 
-            base.OnInit();
+
         }
               
 
         private void Window_Resized(object sender, SizeEventArgs e)
         {
-            if (MainCamera != null)
+            if (SFMLRenderer.MainCamera != null)
             {
                 ScreenSize = new Vector2i((int)e.Width, (int)e.Height);
             }
@@ -119,19 +105,6 @@ namespace Watertight.SFML
             base.Tick(DeltaTime);
         }
 
-        public void RenderStart(float DeltaTime)
-        {
-            Window.SetTitle(string.Format("{0} - FPS: {1}", Name, FPS.ToString("0")));
-            Window.Clear(new Color(0x6699ff));
-            if (MainCamera != null)
-            {
-                Window.SetView(MainCamera.Camera);
-            }
-        }
 
-        public void RenderEnd(float DeltaTime)
-        {
-            Window.Display();
-        }
     }
 }

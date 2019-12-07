@@ -75,7 +75,10 @@ namespace Watertight.Framework
 
         public virtual void OnDestroy()
         { 
-
+            foreach(ActorComponent comp in AllComponents)
+            {
+                comp.OnDestroy();
+            }
         }
 
         public void Destroy()

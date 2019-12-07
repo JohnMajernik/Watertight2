@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Watertight.Tickable
 {
-    class TickManager
+    public class TickManager
     {
 
 
@@ -16,7 +16,7 @@ namespace Watertight.Tickable
         private Stopwatch StopWatch = new Stopwatch();
 
 
-        public float MaxFrameTime
+        public float MinFrameTime
         {
             get;
             set;
@@ -77,19 +77,23 @@ namespace Watertight.Tickable
             }
             RemoveTickList.Clear();
 
+
             long FrameDelta = StopWatch.ElapsedTicks - FrameStart;
-            float BeforeSleepDeltaTime = (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
-
-            if (BeforeSleepDeltaTime < MaxFrameTime)
+            if (MinFrameTime > 0)
             {
-                Thread.Sleep((int)(MaxFrameTime - BeforeSleepDeltaTime));
+                
+                float BeforeSleepDeltaTime = (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
+
+                if (BeforeSleepDeltaTime < MinFrameTime)
+                {
+                    Thread.Sleep((int)(MinFrameTime - BeforeSleepDeltaTime));
+                }
+
+                FrameDelta = StopWatch.ElapsedTicks - FrameStart;
             }
-
-            FrameDelta = StopWatch.ElapsedTicks - FrameStart;
-            float TotalFrameDeltaTime = (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
-            
-
-            return TotalFrameDeltaTime;
+             
+            //Return the total time that this tick took
+            return (float)FrameDelta / (float)TimeSpan.TicksPerMillisecond;
         }
 
     }

@@ -7,10 +7,12 @@ using System.Text;
 using Watertight.Filesystem;
 using Watertight.Framework;
 using Watertight.Framework.Components;
+using Watertight.Interfaces;
+using Watertight.Rendering;
 
 namespace Watertight.SFML.Components
 {
-    public class SFMLVertexMeshComponent : SceneComponent, Drawable
+    public class SFMLVertexMeshComponent : SceneComponent, Drawable, IRenderable
     {
         public SFMLVertexMeshComponent(Actor Owner)
            : base(Owner)
@@ -52,7 +54,6 @@ namespace Watertight.SFML.Components
 
         public override void OnTick(float DeltaTime)
         {
-            SFMLEngine.SFMLInstance.Window.Draw(this);
             base.OnTick(DeltaTime);
         }
 
@@ -80,6 +81,18 @@ namespace Watertight.SFML.Components
 
             target.Draw(VertexArray, PrimitiveType, states);
 
+        }
+
+        public void PreRender(Renderer renderer)
+        {
+            
+        }
+
+        public void Render(Renderer renderer)
+        {
+            SFMLRenderer sfmlRenderer = renderer as SFMLRenderer;
+
+            sfmlRenderer.Window.Draw(this);
         }
     }
 }
