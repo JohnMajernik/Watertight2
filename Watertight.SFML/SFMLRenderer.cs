@@ -126,6 +126,7 @@ namespace Watertight.SFML
         public void SortRenderer(float DeltaTime)
         {
             //TODO: Sort based on Z-Value
+            Renderables.Sort((x, y) => (int)x.GetLocation_WorldSpace().Z - (int)y.GetLocation_WorldSpace().Z);
         }
 
         public void PreRender(float DeltaTime)
