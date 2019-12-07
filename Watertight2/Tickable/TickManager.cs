@@ -54,7 +54,7 @@ namespace Watertight.Tickable
         {
             long FrameStart = StopWatch.ElapsedTicks;
             TickList.Sort((x, y) => {
-                return (int)x.TickGroup - (int)y.TickGroup;
+                return y.TickPriority - x.TickPriority;
             });
             for (int i = 0; i < TickList.Count; i++)
             {

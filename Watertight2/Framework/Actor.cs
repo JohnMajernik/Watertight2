@@ -14,7 +14,7 @@ namespace Watertight.Framework
     {
         internal protected TickFunction PrimaryActorTick = new TickFunction()
         {
-            TickGroup = TickGroup.World,
+            TickPriority = TickFunction.World,
             CanTick = true,
         };
 

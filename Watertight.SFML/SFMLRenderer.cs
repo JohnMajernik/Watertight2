@@ -24,7 +24,7 @@ namespace Watertight.SFML
 
         public override void CreateRenderer()
         {
-           
+           //SFML doesn't have a seperate renderer.  
         }
 
         public override void CreateWindow()

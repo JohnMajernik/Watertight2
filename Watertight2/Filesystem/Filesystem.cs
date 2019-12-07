@@ -17,7 +17,7 @@ namespace Watertight.Filesystem
         internal TickFunction TickFunc = new TickFunction
         { 
             CanTick = true,
-            TickGroup = TickGroup.Last
+            TickPriority = TickFunction.Last
         };
 
         IEnumerable<ResourcePtr> Resources

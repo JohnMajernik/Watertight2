@@ -97,7 +97,7 @@ namespace Watertight
             TickFunction EngineTick = new TickFunction
             {
                 TickFunc = Tick,
-                TickGroup = TickGroup.HighPriority,
+                TickPriority = TickFunction.HighPriority,
                 CanTick = true,
             };
 

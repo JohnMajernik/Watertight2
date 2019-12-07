@@ -27,13 +27,13 @@ namespace Watertight.SFML
         TickFunction RenderEndFunc = new TickFunction
         {
             CanTick = true,
-            TickGroup = TickGroup.Last,
+            TickPriority = TickFunction.Last,
         };
 
         TickFunction RenderStartFunc = new TickFunction
         {
             CanTick = true,
-            TickGroup = TickGroup.HighPriority,
+            TickPriority = TickFunction.HighPriority,
         };
 
         public Vector2i ScreenSize

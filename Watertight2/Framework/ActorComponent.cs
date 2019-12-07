@@ -33,7 +33,7 @@ namespace Watertight.Framework
 
         internal protected TickFunction PrimaryTick = new TickFunction()
         {
-            TickGroup = TickGroup.World,
+            TickPriority = TickFunction.World,
             CanTick = true,
         };
 
